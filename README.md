@@ -52,6 +52,9 @@ Expected behavior:
 
 > Flightex.get_booking(invalid_booking_id)
 {:error, "Flight Booking not found"}
+
+> Flightex.generate_report(from_date, to_date)
+{:ok, "Report generated successfully"}
 ```
 
 Naive Date Time (Date-time without timezone):
@@ -162,6 +165,43 @@ Booking Agent and Creator:
     user_id: "02cf4d12-38bc-46fe-9785-af179fd7053f"
   }
 }
+```
+
+Bookings Report:
+
+```elixir
+> Flightex.start_agents()
+> Flightex.Factory.build_list(4, :user_params) |>
+> Stream.map(fn user_params -> Flightex.create_user(user_params) end) |>
+> Enum.map(fn {:ok, user_id} -> Flightex.create_booking(user_id, Flightex.Factory.build(:booking_params)) end)
+> Flightex.Factory.build_list(3, :user_params) |>
+> Stream.map(fn user_params -> Flightex.create_user(user_params) end) |>
+> Enum.map(fn {:ok, user_id} -> Flightex.create_booking(user_id, Flightex.Factory.build(:booking_params, departure: "2014-02-05 23:59:59")) end)
+> Flightex.Factory.build_list(2, :user_params) |>
+> Stream.map(fn user_params -> Flightex.create_user(user_params) end) |>
+> Enum.map(fn {:ok, user_id} -> Flightex.create_booking(user_id, Flightex.Factory.build(:booking_params, departure: "2014-03-05 23:59:59")) end)
+> Flightex.Factory.build_list(5, :user_params) |>
+> Stream.map(fn user_params -> Flightex.create_user(user_params) end) |>
+> Enum.map(fn {:ok, user_id} -> Flightex.create_booking(user_id, Flightex.Factory.build(:booking_params, departure: "2013-02-05 23:59:59")) end)
+> Flightex.Bookings.Report.generate("2014-01-22 23:50:07", "2014-03-04 23:59:59")
+{:ok, "Report succesfully created."}
+> Flightex.Bookings.Report.generate("2014-01-22 23:50:07", "201-03-04 23:59:59")
+{:error, :invalid_format}
+> Flightex.Bookings.Report.generate("SOFUNKY", "2014-03-04 23:59:59")
+{:error, :invalid_format}
+```
+
+`reports/bookings_report.csv`
+
+```csv
+4f1f3b7b-c953-4bbd-8718-1d1e01944ea7,LAX,Tokyo,2014-03-04 23:59:59
+d681ceb8-c741-4872-aa12-af76960df125,LAX,Tokyo,2014-03-04 23:59:59
+f4c78d33-8d52-4703-8f0e-dc9e11d72007,LAX,Tokyo,2014-03-04 23:59:59
+75a17260-84bc-4a7d-a8e7-89e0706be2db,LAX,Tokyo,2014-03-04 23:59:59
+eb93ff63-e66c-4275-bde3-8c8bf1fb9e11,LAX,Tokyo,2014-02-05 23:59:59
+449cfc8c-d9c0-43ee-8576-037553f687f9,LAX,Tokyo,2014-02-05 23:59:59
+4df01529-ba4f-4836-a82b-285bcb1755ca,LAX,Tokyo,2014-02-05 23:59:59
+
 ```
 
 ## Libs <a name = "libs"></a>

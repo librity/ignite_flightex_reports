@@ -15,10 +15,10 @@ defmodule Flightex.Bookings.Booking do
              is_bitstring(leaving_from) and
              is_bitstring(going_to) and
              is_bitstring(user_id) do
-    with {:ok, departure_date_time} <- NaiveDateTime.from_iso8601(departure_string),
+    with {:ok, departure_date} <- NaiveDateTime.from_iso8601(departure_string),
          {:ok, valid_user_id} <- ValidateUUID.call(user_id),
          {:ok, valid_id} <- ValidateUUID.call(id) do
-      build_booking(departure_date_time, leaving_from, going_to, valid_user_id, valid_id)
+      build_booking(departure_date, leaving_from, going_to, valid_user_id, valid_id)
     else
       error -> error
     end
@@ -26,11 +26,11 @@ defmodule Flightex.Bookings.Booking do
 
   def build(_departure, _leaving_from, _going_to, _user_id, _id), do: {:error, "Invalid params."}
 
-  def build_booking(departure_date_time, leaving_from, going_to, user_id, id) do
+  def build_booking(departure_date, leaving_from, going_to, user_id, id) do
     {:ok,
      %__MODULE__{
        id: id,
-       departure: departure_date_time,
+       departure: departure_date,
        leaving_from: leaving_from,
        going_to: going_to,
        user_id: user_id
